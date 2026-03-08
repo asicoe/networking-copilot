@@ -1,0 +1,16 @@
+default:
+    @just --list
+
+format:
+    uv run ruff format
+    uv run ruff check --fix
+
+lint:
+    -uv run ruff check
+    -uv run basedpyright
+
+ingest +ARGS:
+    uv run cli ingest {{ARGS}}
+
+chat *ARGS:
+    uv run cli chat {{ARGS}}

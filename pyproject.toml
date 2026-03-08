@@ -1,0 +1,24 @@
+[project]
+name = "networking-copilot"
+version = "0.1.0"
+description = "The Networking Copilot is an AI agent that helps you build and interrogate a live knowledge graph of the people in your on-line or off-line community"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "click",
+    "langchain-core",
+    "langchain-community",
+    "langchain-ollama",
+    "langchain-surrealdb",
+    "nanoid~=2.0.0",
+]
+
+[project.scripts]
+cli = "networking_copilot.main:cli"
+
+[build-system]
+requires = ["uv_build~=0.9.15"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+langchain-community = { git = "https://github.com/langchain-ai/langchain-community.git", subdirectory = "libs/community" }

@@ -42,7 +42,6 @@ def chat(
                 break
 
             # -- Find relevant docs
-            # click.echo("\n======================================================")
             start_time_similarity = time.time()
             docs = vector_search(query, vector_store, k=5, score_threshold=0.3)
             messages = format_document_messages([doc for doc, _score in docs])
@@ -51,17 +50,10 @@ def chat(
                 messages, query, user_name
             )
             end_time_similarity = time.time()
-            # click.secho("\nAnswer from vector search: ", fg="blue")
-            # click.secho(similarity_answer, fg="magenta")
-            # click.secho(
-            #     f"took: {end_time_similarity - start_time_similarity}", fg="red"
-            # )
 
             # -- Search keywords
-            # click.echo("\n======================================================")
             start_time_graph = time.time()
             _inferred = infer_keywords(query, all_keywords)
-            # click.secho(f"Query keywords: {_inferred}")
             similar_keyword_docs: list[tuple[Document, float]] = []
             for k in _inferred:
                 tmp = vector_search(
@@ -71,7 +63,6 @@ def chat(
             similar_keyword_docs = sorted(
                 similar_keyword_docs, key=lambda x: x[1], reverse=True
             )
-            # click.secho(f"Similar keywords found: {similar_keyword_docs}", fg="green")
 
             # -- Query graph
 
@@ -82,31 +73,22 @@ def chat(
             # - graph_query uses a pre-defined query template and executes it on
             # the graph database
             graph_results = graph_query(conn, similar_keyword_docs)
-            # click.secho(len(graph_results), fg="yellow")
             graph_answer = generate_answer_from_messages(
                 graph_results, query, user_name
             )
 
             end_time_graph = time.time()
-            # click.secho("\nAnswer from graph: ", fg="blue")
-            # click.secho(graph_answer, fg="magenta")
-            # click.secho(f"took: {end_time_graph - start_time_graph}", fg="red")
 
             # -- Summarize final answer
             click.echo("\n======================================================")
             dedupped = list(set(messages + graph_results))
             len_all = len(messages) + len(graph_results)
             len_dedupped = len(dedupped)
-            # if len_dedupped != len_all:
-            #     click.secho(
-            #         f"Intersection: from {len_all} to {len_dedupped} docs", fg="yellow"
-            #     )
             final_answer = summarize_answer(
                 dedupped,
                 query,
                 user_name,
             )
-            # click.secho("Summary from both:", fg="blue")
             click.secho(final_answer, fg="magenta")
             click.echo("\n======================================================")
     except KeyboardInterrupt:
